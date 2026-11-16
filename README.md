@@ -6,6 +6,8 @@ Watt Watch is a small, dependency-free dashboard for reviewing household electri
 
 Open `index.html` in a modern browser. No build step or package installation is required.
 
+The seven-day usage chart compares the latest daily average with the opening days so changes are visible without reading every row.
+
 ## Validate changes
 
 ```sh

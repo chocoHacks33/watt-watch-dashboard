@@ -42,6 +42,59 @@ function summarizeReadings(items) {
   };
 }
 
+function buildTrendPoints(items) {
+  const highest = Math.max(...items.map((reading) => reading.kwh), 1);
+  return items.map((reading) => ({
+    date: reading.date,
+    kwh: reading.kwh,
+    percentage: Math.round((reading.kwh / highest) * 100)
+  }));
+}
+
+function calculateTrendChange(items) {
+  if (items.length < 2) {
+    return 0;
+  }
+
+  const periodSize = Math.floor(items.length / 2);
+  const average = (period) => period.reduce((sum, reading) => sum + reading.kwh, 0) / period.length;
+  const earlierAverage = average(items.slice(0, periodSize));
+  const recentAverage = average(items.slice(-periodSize));
+
+  return earlierAverage === 0 ? 0 : ((recentAverage - earlierAverage) / earlierAverage) * 100;
+}
+
+function renderTrend(items) {
+  const chart = document.querySelector("#usage-trend");
+  const points = buildTrendPoints(items);
+  const change = calculateTrendChange(items);
+
+  chart.replaceChildren(...points.map((point) => {
+    const column = document.createElement("div");
+    column.className = "trend-column";
+
+    const value = document.createElement("strong");
+    value.textContent = point.kwh.toFixed(1);
+
+    const track = document.createElement("div");
+    track.className = "trend-track";
+    const bar = document.createElement("span");
+    bar.style.height = `${point.percentage}%`;
+    track.append(bar);
+
+    const label = document.createElement("span");
+    label.textContent = formatDate(point.date, { weekday: "short" });
+
+    column.append(value, track, label);
+    return column;
+  }));
+
+  const direction = change > 0 ? "higher" : change < 0 ? "lower" : "unchanged";
+  document.querySelector("#trend-summary").textContent = direction === "unchanged"
+    ? "Recent average is unchanged"
+    : `Recent average is ${Math.abs(change).toFixed(0)}% ${direction}`;
+}
+
 function renderSummary(items) {
   const summary = summarizeReadings(items);
   document.querySelector("#total-kwh").textContent = `${summary.totalKwh.toFixed(1)} kWh`;
@@ -104,6 +157,7 @@ function renderReadings(items) {
 function init() {
   renderSummary(readings);
   renderReadings(readings);
+  renderTrend(readings);
 }
 
 if (typeof document !== "undefined") {
@@ -112,6 +166,8 @@ if (typeof document !== "undefined") {
 
 if (typeof module !== "undefined") {
   module.exports = {
+    buildTrendPoints,
+    calculateTrendChange,
     formatCurrency,
     formatDate,
     parseLocalDate,

@@ -2,6 +2,8 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 
 const {
+  buildTrendPoints,
+  calculateTrendChange,
   formatCurrency,
   formatDate,
   parseLocalDate,
@@ -55,4 +57,27 @@ test("formatCurrency returns a Singapore-dollar amount", () => {
   const formatted = formatCurrency(12.5);
   assert.match(formatted, /12\.50/);
   assert.match(formatted, /\$/);
+});
+
+test("buildTrendPoints scales each reading against the highest day", () => {
+  assert.deepEqual(buildTrendPoints([
+    { date: "2026-11-01", kwh: 5 },
+    { date: "2026-11-02", kwh: 10 }
+  ]), [
+    { date: "2026-11-01", kwh: 5, percentage: 50 },
+    { date: "2026-11-02", kwh: 10, percentage: 100 }
+  ]);
+});
+
+test("calculateTrendChange compares equally sized recent and earlier periods", () => {
+  const items = [
+    { kwh: 8 },
+    { kwh: 12 },
+    { kwh: 99 },
+    { kwh: 12 },
+    { kwh: 18 }
+  ];
+
+  assert.equal(calculateTrendChange(items), 50);
+  assert.equal(calculateTrendChange([{ kwh: 10 }]), 0);
 });
