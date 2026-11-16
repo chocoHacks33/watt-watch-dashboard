@@ -6,6 +6,8 @@ Watt Watch is a small, dependency-free dashboard for reviewing household electri
 
 Open `index.html` in a modern browser. No build step or package installation is required.
 
+Set a monthly electricity-cost target to see current spending in context. The target is stored only in the current browser.
+
 ## Validate changes
 
 ```sh

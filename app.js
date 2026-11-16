@@ -8,6 +8,9 @@ const readings = [
   { date: "2026-11-15", appliance: "Whole home", kwh: 12.9, cost: 3.74 }
 ];
 
+const BUDGET_STORAGE_KEY = "watt-watch-monthly-budget";
+const DEFAULT_MONTHLY_BUDGET = 100;
+
 function parseLocalDate(value) {
   const [year, month, day] = value.split("-").map(Number);
   return new Date(year, month - 1, day);
@@ -40,6 +43,28 @@ function summarizeReadings(items) {
     dailyAverage: totalKwh / items.length,
     peak
   };
+}
+
+function normalizeBudget(value, fallback = DEFAULT_MONTHLY_BUDGET) {
+  const amount = Number(value);
+  return Number.isFinite(amount) && amount > 0 ? amount : fallback;
+}
+
+function calculateBudgetProgress(spent, budget) {
+  const safeBudget = normalizeBudget(budget);
+  return Math.min((Math.max(spent, 0) / safeBudget) * 100, 100);
+}
+
+function renderBudget(totalCost, budget) {
+  const safeBudget = normalizeBudget(budget);
+  const percentage = calculateBudgetProgress(totalCost, safeBudget);
+  const progress = document.querySelector("#budget-progress");
+
+  document.querySelector("#monthly-budget").value = String(safeBudget);
+  document.querySelector("#budget-progress-label").textContent =
+    `${formatCurrency(totalCost)} of ${formatCurrency(safeBudget)}`;
+  progress.setAttribute("aria-valuenow", String(Math.round(percentage)));
+  progress.querySelector("span").style.width = `${percentage}%`;
 }
 
 function renderSummary(items) {
@@ -104,6 +129,21 @@ function renderReadings(items) {
 function init() {
   renderSummary(readings);
   renderReadings(readings);
+
+  const totalCost = summarizeReadings(readings).totalCost;
+  const form = document.querySelector("#budget-form");
+  const input = document.querySelector("#monthly-budget");
+  const savedBudget = normalizeBudget(localStorage.getItem(BUDGET_STORAGE_KEY));
+  renderBudget(totalCost, savedBudget);
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const budget = normalizeBudget(input.value, savedBudget);
+    localStorage.setItem(BUDGET_STORAGE_KEY, String(budget));
+    renderBudget(totalCost, budget);
+    document.querySelector("#budget-status").textContent =
+      `Monthly target saved at ${formatCurrency(budget)}.`;
+  });
 }
 
 if (typeof document !== "undefined") {
@@ -112,8 +152,11 @@ if (typeof document !== "undefined") {
 
 if (typeof module !== "undefined") {
   module.exports = {
+    BUDGET_STORAGE_KEY,
+    calculateBudgetProgress,
     formatCurrency,
     formatDate,
+    normalizeBudget,
     parseLocalDate,
     readings,
     summarizeReadings

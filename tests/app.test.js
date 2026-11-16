@@ -2,8 +2,11 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 
 const {
+  BUDGET_STORAGE_KEY,
+  calculateBudgetProgress,
   formatCurrency,
   formatDate,
+  normalizeBudget,
   parseLocalDate,
   readings,
   summarizeReadings
@@ -55,4 +58,17 @@ test("formatCurrency returns a Singapore-dollar amount", () => {
   const formatted = formatCurrency(12.5);
   assert.match(formatted, /12\.50/);
   assert.match(formatted, /\$/);
+});
+
+test("normalizeBudget accepts positive numbers and falls back for invalid values", () => {
+  assert.equal(normalizeBudget("125"), 125);
+  assert.equal(normalizeBudget(0), 100);
+  assert.equal(normalizeBudget("not-a-number", 80), 80);
+  assert.equal(BUDGET_STORAGE_KEY, "watt-watch-monthly-budget");
+});
+
+test("calculateBudgetProgress clamps spending to the progressbar range", () => {
+  assert.equal(calculateBudgetProgress(25, 100), 25);
+  assert.equal(calculateBudgetProgress(120, 100), 100);
+  assert.equal(calculateBudgetProgress(-5, 100), 0);
 });
