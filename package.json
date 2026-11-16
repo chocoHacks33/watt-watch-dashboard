@@ -1,0 +1,11 @@
+{
+  "name": "watt-watch-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A dependency-free dashboard for understanding household electricity use.",
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check app.js"
+  }
+}
+
