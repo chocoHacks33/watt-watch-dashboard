@@ -6,6 +6,8 @@ Watt Watch is a small, dependency-free dashboard for reviewing household electri
 
 Open `index.html` in a modern browser. No build step or package installation is required.
 
+Use the dominant-load filter to focus the summary and meter log on days led by cooling, kitchen, laundry, or home-office use.
+
 ## Validate changes
 
 ```sh

@@ -192,6 +192,34 @@ h2 {
   margin-bottom: 1.25rem;
 }
 
+.reading-tools {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.reading-tools label {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.reading-tools select {
+  min-height: 2.25rem;
+  padding: 0.35rem 2rem 0.35rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  background: white;
+  color: var(--ink);
+}
+
+.reading-tools select:focus-visible {
+  outline: 3px solid var(--lime);
+  outline-offset: 2px;
+}
+
 .count-pill {
   padding: 0.35rem 0.65rem;
   background: var(--green-soft);
@@ -312,6 +340,15 @@ footer {
 
   .summary-grid {
     grid-template-columns: 1fr;
+  }
+
+  .panel-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .reading-tools {
+    justify-content: flex-start;
   }
 
   .summary-card {

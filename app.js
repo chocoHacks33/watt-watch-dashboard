@@ -1,11 +1,11 @@
 const readings = [
-  { date: "2026-11-09", appliance: "Whole home", kwh: 11.8, cost: 3.42 },
-  { date: "2026-11-10", appliance: "Whole home", kwh: 13.2, cost: 3.83 },
-  { date: "2026-11-11", appliance: "Whole home", kwh: 12.4, cost: 3.60 },
-  { date: "2026-11-12", appliance: "Whole home", kwh: 15.7, cost: 4.55 },
-  { date: "2026-11-13", appliance: "Whole home", kwh: 14.1, cost: 4.09 },
-  { date: "2026-11-14", appliance: "Whole home", kwh: 18.3, cost: 5.31 },
-  { date: "2026-11-15", appliance: "Whole home", kwh: 12.9, cost: 3.74 }
+  { date: "2026-11-09", appliance: "Cooling", kwh: 11.8, cost: 3.42 },
+  { date: "2026-11-10", appliance: "Kitchen", kwh: 13.2, cost: 3.83 },
+  { date: "2026-11-11", appliance: "Home office", kwh: 12.4, cost: 3.60 },
+  { date: "2026-11-12", appliance: "Cooling", kwh: 15.7, cost: 4.55 },
+  { date: "2026-11-13", appliance: "Laundry", kwh: 14.1, cost: 4.09 },
+  { date: "2026-11-14", appliance: "Cooling", kwh: 18.3, cost: 5.31 },
+  { date: "2026-11-15", appliance: "Kitchen", kwh: 12.9, cost: 3.74 }
 ];
 
 function parseLocalDate(value) {
@@ -42,6 +42,20 @@ function summarizeReadings(items) {
   };
 }
 
+function getAppliances(items) {
+  return [...new Set(items.map((reading) => reading.appliance))].sort((left, right) =>
+    left.localeCompare(right)
+  );
+}
+
+function filterReadings(items, appliance) {
+  if (appliance === "all") {
+    return items;
+  }
+
+  return items.filter((reading) => reading.appliance === appliance);
+}
+
 function renderSummary(items) {
   const summary = summarizeReadings(items);
   document.querySelector("#total-kwh").textContent = `${summary.totalKwh.toFixed(1)} kWh`;
@@ -51,6 +65,7 @@ function renderSummary(items) {
   if (!summary.peak) {
     document.querySelector("#peak-day").textContent = "No data";
     document.querySelector("#peak-detail").textContent = "Add a reading to begin";
+    document.querySelector("#insight-copy").textContent = "No readings match this load yet.";
     return;
   }
 
@@ -102,8 +117,22 @@ function renderReadings(items) {
 }
 
 function init() {
-  renderSummary(readings);
-  renderReadings(readings);
+  const filter = document.querySelector("#appliance-filter");
+  getAppliances(readings).forEach((appliance) => {
+    const option = document.createElement("option");
+    option.value = appliance;
+    option.textContent = appliance;
+    filter.append(option);
+  });
+
+  const updateDashboard = () => {
+    const filteredReadings = filterReadings(readings, filter.value);
+    renderSummary(filteredReadings);
+    renderReadings(filteredReadings);
+  };
+
+  filter.addEventListener("change", updateDashboard);
+  updateDashboard();
 }
 
 if (typeof document !== "undefined") {
@@ -114,6 +143,8 @@ if (typeof module !== "undefined") {
   module.exports = {
     formatCurrency,
     formatDate,
+    filterReadings,
+    getAppliances,
     parseLocalDate,
     readings,
     summarizeReadings
