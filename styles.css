@@ -180,6 +180,60 @@ h2 {
   margin-top: 1rem;
 }
 
+.trend-panel {
+  margin-top: 1rem;
+}
+
+.trend-summary {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.trend-chart {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(2.5rem, 1fr));
+  gap: clamp(0.45rem, 2vw, 1.2rem);
+  min-height: 15rem;
+  padding: 1rem 0 0.25rem;
+  border-top: 1px solid var(--line);
+}
+
+.trend-column {
+  display: grid;
+  grid-template-rows: 1.4rem 1fr 1.4rem;
+  gap: 0.35rem;
+  min-width: 0;
+  text-align: center;
+}
+
+.trend-column strong,
+.trend-column > span {
+  font-size: 0.76rem;
+}
+
+.trend-column > span {
+  color: var(--muted);
+}
+
+.trend-track {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-height: 10rem;
+  overflow: hidden;
+  border-radius: 0.65rem;
+  background: linear-gradient(to top, #edf0eb, #f8f9f6);
+}
+
+.trend-track span {
+  width: min(2.5rem, 72%);
+  min-height: 0.35rem;
+  border-radius: 0.5rem 0.5rem 0.2rem 0.2rem;
+  background: linear-gradient(to top, var(--green), var(--lime));
+}
+
 .panel {
   padding: 1.5rem;
 }
@@ -312,6 +366,15 @@ footer {
 
   .summary-grid {
     grid-template-columns: 1fr;
+  }
+
+  .trend-panel .panel-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .trend-chart {
+    gap: 0.3rem;
   }
 
   .summary-card {
