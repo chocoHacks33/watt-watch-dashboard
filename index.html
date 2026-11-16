@@ -55,9 +55,13 @@
               <p class="eyebrow">Daily meter log</p>
               <h2 id="readings-title">Recent readings</h2>
             </div>
-            <span id="reading-count" class="count-pill">0 days</span>
+            <div class="panel-actions">
+              <button id="export-readings" class="secondary-button" type="button">Download CSV</button>
+              <span id="reading-count" class="count-pill">0 days</span>
+            </div>
           </div>
           <div id="readings-list" class="readings-list"></div>
+          <p id="export-status" class="visually-hidden" aria-live="polite"></p>
         </article>
 
         <aside class="panel insight-panel" aria-labelledby="insight-title">
