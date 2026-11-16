@@ -2,10 +2,12 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 
 const {
+  escapeCsvCell,
   formatCurrency,
   formatDate,
   parseLocalDate,
   readings,
+  readingsToCsv,
   summarizeReadings
 } = require("../app.js");
 
@@ -55,4 +57,21 @@ test("formatCurrency returns a Singapore-dollar amount", () => {
   const formatted = formatCurrency(12.5);
   assert.match(formatted, /12\.50/);
   assert.match(formatted, /\$/);
+});
+
+test("escapeCsvCell quotes content and neutralizes spreadsheet formulas", () => {
+  assert.equal(escapeCsvCell('Kitchen "A"'), '"Kitchen ""A"""');
+  assert.equal(escapeCsvCell("=1+1"), '"\'=1+1"');
+  assert.equal(escapeCsvCell("  @SUM(A1:A2)"), '"\'  @SUM(A1:A2)"');
+});
+
+test("readingsToCsv exports a stable header and one row per reading", () => {
+  const csv = readingsToCsv([
+    { date: "2026-11-09", appliance: "Cooling", kwh: 11.8, cost: 3.42 }
+  ]);
+  const lines = csv.split("\r\n");
+
+  assert.equal(lines.length, 2);
+  assert.equal(lines[0], '"Date","Primary load","Energy (kWh)","Estimated cost (SGD)"');
+  assert.equal(lines[1], '"2026-11-09","Cooling","11.8","3.42"');
 });

@@ -6,6 +6,8 @@ Watt Watch is a small, dependency-free dashboard for reviewing household electri
 
 Open `index.html` in a modern browser. No build step or package installation is required.
 
+Download the visible sample readings as a CSV file for a spreadsheet or a household energy review. Text cells that could be interpreted as formulas are neutralized during export.
+
 ## Validate changes
 
 ```sh

@@ -42,6 +42,39 @@ function summarizeReadings(items) {
   };
 }
 
+function escapeCsvCell(value) {
+  let text = String(value ?? "");
+  if (/^[\t\r ]*[=+\-@]/.test(text)) {
+    text = `'${text}`;
+  }
+
+  return `"${text.replaceAll('"', '""')}"`;
+}
+
+function readingsToCsv(items) {
+  const header = ["Date", "Primary load", "Energy (kWh)", "Estimated cost (SGD)"];
+  const rows = items.map((reading) => [
+    reading.date,
+    reading.appliance,
+    reading.kwh.toFixed(1),
+    reading.cost.toFixed(2)
+  ]);
+
+  return [header, ...rows]
+    .map((row) => row.map(escapeCsvCell).join(","))
+    .join("\r\n");
+}
+
+function downloadReadingsCsv(items) {
+  const blob = new Blob([readingsToCsv(items)], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "watt-watch-readings.csv";
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
 function renderSummary(items) {
   const summary = summarizeReadings(items);
   document.querySelector("#total-kwh").textContent = `${summary.totalKwh.toFixed(1)} kWh`;
@@ -104,6 +137,11 @@ function renderReadings(items) {
 function init() {
   renderSummary(readings);
   renderReadings(readings);
+  document.querySelector("#export-readings").addEventListener("click", () => {
+    downloadReadingsCsv(readings);
+    document.querySelector("#export-status").textContent =
+      `${readings.length} readings exported to watt-watch-readings.csv.`;
+  });
 }
 
 if (typeof document !== "undefined") {
@@ -112,10 +150,12 @@ if (typeof document !== "undefined") {
 
 if (typeof module !== "undefined") {
   module.exports = {
+    escapeCsvCell,
     formatCurrency,
     formatDate,
     parseLocalDate,
     readings,
+    readingsToCsv,
     summarizeReadings
   };
 }
