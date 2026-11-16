@@ -55,7 +55,13 @@
               <p class="eyebrow">Daily meter log</p>
               <h2 id="readings-title">Recent readings</h2>
             </div>
-            <span id="reading-count" class="count-pill">0 days</span>
+            <div class="reading-tools">
+              <label for="appliance-filter">Dominant load</label>
+              <select id="appliance-filter">
+                <option value="all">All loads</option>
+              </select>
+              <span id="reading-count" class="count-pill">0 days</span>
+            </div>
           </div>
           <div id="readings-list" class="readings-list"></div>
         </article>

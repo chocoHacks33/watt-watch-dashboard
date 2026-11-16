@@ -4,6 +4,8 @@ const assert = require("node:assert/strict");
 const {
   formatCurrency,
   formatDate,
+  filterReadings,
+  getAppliances,
   parseLocalDate,
   readings,
   summarizeReadings
@@ -55,4 +57,18 @@ test("formatCurrency returns a Singapore-dollar amount", () => {
   const formatted = formatCurrency(12.5);
   assert.match(formatted, /12\.50/);
   assert.match(formatted, /\$/);
+});
+
+test("getAppliances returns unique load names in display order", () => {
+  assert.deepEqual(getAppliances(readings), ["Cooling", "Home office", "Kitchen", "Laundry"]);
+});
+
+test("filterReadings selects a dominant load without mutating the source", () => {
+  const source = readings.slice();
+  const cooling = filterReadings(readings, "Cooling");
+
+  assert.equal(cooling.length, 3);
+  assert.ok(cooling.every((reading) => reading.appliance === "Cooling"));
+  assert.deepEqual(readings, source);
+  assert.equal(filterReadings(readings, "all"), readings);
 });
