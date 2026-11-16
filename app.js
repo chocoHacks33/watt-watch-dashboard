@@ -42,6 +42,55 @@ function summarizeReadings(items) {
   };
 }
 
+function findUsageAlerts(items, { windowSize = 3, threshold = 0.25 } = {}) {
+  if (windowSize < 1 || items.length <= windowSize) {
+    return [];
+  }
+
+  return items.slice(windowSize).flatMap((reading, offset) => {
+    const index = offset + windowSize;
+    const previous = items.slice(index - windowSize, index);
+    const baseline = previous.reduce((sum, item) => sum + item.kwh, 0) / windowSize;
+    const change = baseline === 0 ? 0 : (reading.kwh - baseline) / baseline;
+
+    return change >= threshold ? [{ reading, baseline, change }] : [];
+  });
+}
+
+function renderUsageAlerts(items) {
+  const alerts = findUsageAlerts(items);
+  const list = document.querySelector("#alerts-list");
+
+  if (alerts.length === 0) {
+    const message = document.createElement("p");
+    message.className = "alert-empty";
+    message.textContent = "No unusual high-use days were found in this period.";
+    list.replaceChildren(message);
+  } else {
+    list.replaceChildren(...alerts.map((alert) => {
+      const item = document.createElement("article");
+      item.className = "usage-alert";
+
+      const badge = document.createElement("span");
+      badge.className = "alert-badge";
+      badge.textContent = `+${Math.round(alert.change * 100)}%`;
+
+      const copy = document.createElement("div");
+      const title = document.createElement("strong");
+      title.textContent = formatDate(alert.reading.date, { weekday: "long", day: "numeric", month: "short" });
+      const detail = document.createElement("p");
+      detail.textContent = `${alert.reading.kwh.toFixed(1)} kWh used versus a ${alert.baseline.toFixed(1)} kWh three-day average.`;
+      copy.append(title, detail);
+
+      item.append(badge, copy);
+      return item;
+    }));
+  }
+
+  document.querySelector("#alert-count").textContent =
+    `${alerts.length} ${alerts.length === 1 ? "signal" : "signals"}`;
+}
+
 function renderSummary(items) {
   const summary = summarizeReadings(items);
   document.querySelector("#total-kwh").textContent = `${summary.totalKwh.toFixed(1)} kWh`;
@@ -104,6 +153,7 @@ function renderReadings(items) {
 function init() {
   renderSummary(readings);
   renderReadings(readings);
+  renderUsageAlerts(readings);
 }
 
 if (typeof document !== "undefined") {
@@ -112,6 +162,7 @@ if (typeof document !== "undefined") {
 
 if (typeof module !== "undefined") {
   module.exports = {
+    findUsageAlerts,
     formatCurrency,
     formatDate,
     parseLocalDate,
