@@ -2,6 +2,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 
 const {
+  findUsageAlerts,
   formatCurrency,
   formatDate,
   parseLocalDate,
@@ -55,4 +56,28 @@ test("formatCurrency returns a Singapore-dollar amount", () => {
   const formatted = formatCurrency(12.5);
   assert.match(formatted, /12\.50/);
   assert.match(formatted, /\$/);
+});
+
+test("findUsageAlerts compares each day with its preceding rolling window", () => {
+  const items = [
+    { date: "2026-11-01", kwh: 10 },
+    { date: "2026-11-02", kwh: 10 },
+    { date: "2026-11-03", kwh: 10 },
+    { date: "2026-11-04", kwh: 12 },
+    { date: "2026-11-05", kwh: 20 }
+  ];
+  const alerts = findUsageAlerts(items);
+
+  assert.equal(alerts.length, 1);
+  assert.equal(alerts[0].reading.date, "2026-11-05");
+  assert.equal(alerts[0].baseline, 32 / 3);
+  assert.ok(alerts[0].change > 0.8);
+});
+
+test("findUsageAlerts supports a custom window and returns no premature signals", () => {
+  assert.deepEqual(findUsageAlerts([{ kwh: 10 }, { kwh: 20 }]), []);
+  assert.equal(findUsageAlerts(
+    [{ kwh: 10 }, { kwh: 11 }, { kwh: 15 }],
+    { windowSize: 2, threshold: 0.4 }
+  ).length, 1);
 });
