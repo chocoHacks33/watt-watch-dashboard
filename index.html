@@ -64,6 +64,31 @@
           <p class="eyebrow">Small next step</p>
           <h2 id="insight-title">Check the busiest circuit</h2>
           <p id="insight-copy">Your highest-use reading will appear here.</p>
+          <form id="budget-form" class="budget-card">
+            <div class="budget-heading">
+              <div>
+                <span>Monthly cost target</span>
+                <strong id="budget-progress-label">—</strong>
+              </div>
+              <label for="monthly-budget">Target (S$)</label>
+              <div class="budget-input">
+                <input id="monthly-budget" name="monthlyBudget" type="number" min="1" step="1" value="100" required>
+                <button type="submit">Save</button>
+              </div>
+            </div>
+            <div
+              id="budget-progress"
+              class="budget-progress"
+              role="progressbar"
+              aria-label="Monthly cost target used"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="0"
+            >
+              <span></span>
+            </div>
+            <p id="budget-status" class="budget-status" aria-live="polite"></p>
+          </form>
           <div class="tip">
             <span aria-hidden="true">↘</span>
             <p>Shifting one flexible load away from peak hours can make usage easier to manage.</p>

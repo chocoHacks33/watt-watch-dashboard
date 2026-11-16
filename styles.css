@@ -249,8 +249,89 @@ h2 {
 }
 
 .insight-panel > p:not(.eyebrow) {
-  margin: 1rem 0 2rem;
+  margin: 1rem 0 1.25rem;
   color: #3c5a50;
+}
+
+.budget-card {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid rgba(31, 115, 88, 0.2);
+  border-radius: 0.9rem;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.budget-heading {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.budget-heading span,
+.budget-heading label,
+.budget-status {
+  color: #3c5a50;
+  font-size: 0.76rem;
+}
+
+.budget-heading strong {
+  display: block;
+  font-size: 0.92rem;
+}
+
+.budget-input {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.budget-input input,
+.budget-input button {
+  min-height: 2.35rem;
+  border: 1px solid rgba(31, 115, 88, 0.3);
+  border-radius: 0.55rem;
+}
+
+.budget-input input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.4rem 0.55rem;
+  background: white;
+  color: var(--ink);
+}
+
+.budget-input button {
+  padding-inline: 0.75rem;
+  background: var(--green);
+  color: white;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.budget-input input:focus-visible,
+.budget-input button:focus-visible {
+  outline: 3px solid var(--lime);
+  outline-offset: 2px;
+}
+
+.budget-progress {
+  height: 0.55rem;
+  margin-top: 0.85rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #dce5dc;
+}
+
+.budget-progress span {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--green);
+  transition: width 180ms ease;
+}
+
+.budget-status {
+  min-height: 1.15rem;
+  margin: 0.5rem 0 0;
 }
 
 .tip {
